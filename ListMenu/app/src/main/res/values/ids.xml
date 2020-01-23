@@ -1,0 +1,5 @@
+<?xml version="1.0" encoding="utf-8"?>
+<resources>
+    <item name="fab" type="id">Floating Button</item>
+    <item name="action_add_tesk" type="id">Action tesk</item>
+</resources>
