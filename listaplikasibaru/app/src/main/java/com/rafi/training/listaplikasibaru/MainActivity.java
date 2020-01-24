@@ -6,6 +6,7 @@ import androidx.appcompat.app.AppCompatActivity;
 import android.content.DialogInterface;
 import android.content.SharedPreferences;
 import android.os.Bundle;
+import android.text.TextUtils;
 import android.view.View;
 import android.widget.AdapterView;
 import android.widget.ArrayAdapter;
@@ -52,7 +53,21 @@ public class MainActivity extends AppCompatActivity {
             @Override
             public boolean onItemLongClick(AdapterView<?> parent, View view, int position, long id) {
                 deleteItem(position);
-                return false;
+                deleteFromSP(position);
+                return true;
+            }
+        });
+
+        listitem.setOnItemClickListener(new AdapterView.OnItemClickListener() {
+            @Override
+            public void onItemClick(AdapterView<?> parent, View view, int position, long id) {
+                showDialogEdit(position);
+            }
+        });
+        listitem.setOnItemClickListener(new AdapterView.OnItemClickListener() {
+            @Override
+            public void onItemClick(AdapterView<?> parent, View view, int position, long id) {
+                showDialogOption(position);
             }
         });
     }
@@ -67,6 +82,7 @@ public class MainActivity extends AppCompatActivity {
     private void onClickFabAdd(){
         View view=View.inflate(this,R.layout.dialog_add_view, null);
         edttodo=view.findViewById(R.id.edt_todo);
+        edttodo.setError("Tidak boleh kosong");
 
         AlertDialog.Builder dialog=new AlertDialog.Builder(this);
         dialog.setTitle("Mau ngapain lagi ?");
@@ -91,7 +107,7 @@ public class MainActivity extends AppCompatActivity {
         dialog.show();
     }
     //
-    private void deleteItem(int position){
+    private void deleteItem(final int position){
         final int index = position;
 
         AlertDialog.Builder delete = new AlertDialog.Builder(this);
@@ -99,7 +115,8 @@ public class MainActivity extends AppCompatActivity {
         delete.setPositiveButton("Yes", new DialogInterface.OnClickListener() {
             @Override
             public void onClick(DialogInterface dialog, int which) {
-                data.remove(index);
+                data.remove(position);
+                reGenerateSortSP();
                 arrayAdapter.notifyDataSetChanged();
             }
         });
@@ -125,5 +142,70 @@ public class MainActivity extends AppCompatActivity {
                 data.add(item);
             }
         }
+    }
+    private void deleteFromSP(int position){
+        String key = String.valueOf(position);
+        SharedPreferences todopref = getSharedPreferences("todoplayer",MODE_PRIVATE);
+        SharedPreferences.Editor todosprefEditor = todopref.edit();
+        todosprefEditor.remove(key);
+        todosprefEditor.apply();
+    }
+    private void reGenerateSortSP(){
+        SharedPreferences todopref = getSharedPreferences("todoplayer",MODE_PRIVATE);
+        SharedPreferences.Editor todosprefEditor = todopref.edit();
+        todosprefEditor.clear();
+        todosprefEditor.apply();
+
+        for (int i = 0; i < data.size();i++){
+            String key = String.valueOf(i);
+            todosprefEditor.putString(key,data.get(i));
+        }
+        todosprefEditor.apply();
+    }
+
+    private void showDialogEdit(final int position){
+        View view = View.inflate(this,R.layout.dialog_add_view,null);
+        edttodo=view.findViewById(R.id.edt_todo);
+        edttodo.setText(arrayAdapter.getItem(position));
+
+        AlertDialog.Builder dialog = new AlertDialog.Builder(this);
+        dialog.setTitle("What do you want to change ?");
+        dialog.setView(view);
+        dialog.setPositiveButton("Change it", new DialogInterface.OnClickListener() {
+            @Override
+            public void onClick(DialogInterface dialog, int which) {
+                editItem(position,edttodo.getText().toString());
+            }
+        });
+        dialog.setNegativeButton("cancel",null);
+        dialog.create();
+        dialog.show();
+    }
+
+    private void editItem(int position, String newItem){
+        data.set(position,newItem);
+        reGenerateSortSP();
+        arrayAdapter.notifyDataSetChanged();
+    }
+    private void showDialogOption(int pos){
+        final int position = pos;
+        AlertDialog.Builder dialog = new AlertDialog.Builder(this);
+        dialog.setTitle("What are you trying to do ?");
+        dialog.setPositiveButton("add", new DialogInterface.OnClickListener() {
+            @Override
+            public void onClick(DialogInterface dialog, int which) {
+                showDialogEdit(position);
+            }
+        });
+        dialog.setNeutralButton("cancel",null);
+        dialog.setNegativeButton("delete",null);
+        dialog.setNegativeButton("delete", new DialogInterface.OnClickListener() {
+            @Override
+            public void onClick(DialogInterface dialog, int which) {
+                deleteItem(position);
+            }
+        });
+        dialog.create();
+        dialog.show();
     }
 }
