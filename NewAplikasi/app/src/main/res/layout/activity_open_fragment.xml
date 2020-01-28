@@ -1,0 +1,32 @@
+<?xml version="1.0" encoding="utf-8"?>
+<androidx.appcompat.widget.LinearLayoutCompat xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:app="http://schemas.android.com/apk/res-auto"
+    xmlns:tools="http://schemas.android.com/tools"
+    android:layout_width="match_parent"
+    android:layout_height="match_parent"
+    android:orientation="vertical"
+    tools:context=".OpenFragment">
+
+    <Button
+        android:id="@+id/btn_fragment"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:text="Go to aplikasi"
+        android:textColor="#FFFF"
+        android:background="@color/colorAccent"/>
+    <Button
+        android:id="@+id/btn_fragment_aplikasi"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:text="Go Aplikasi"
+        android:textColor="#FFFF"
+        android:background="@color/colorAccent"
+        android:visibility="gone"/>
+
+
+    <FrameLayout
+        android:id="@+id/frame_fragmentsone"
+        android:layout_width="match_parent"
+        android:layout_height="match_parent"/>
+
+</androidx.appcompat.widget.LinearLayoutCompat>
